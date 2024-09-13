@@ -1,0 +1,44 @@
+/* Container for the saber effect */
+.saber-effect-container {
+  position: relative;
+  display: inline-block;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #1a202c; /* Background color of the div */
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Optional: adds a slight glow */
+}
+
+/* Saber effect with neon light animation */
+.saber-effect {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #1a202c; /* Same as container background */
+}
+
+.saber-effect::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  border-radius: 10px;
+  background: linear-gradient(45deg, rgba(255, 0, 150, 0.7), rgba(0, 204, 255, 0.7));
+  opacity: 0.6;
+  filter: blur(10px);
+  z-index: -1;
+  animation: neon-travel 3s infinite linear;
+}
+
+/* Keyframes for the neon light travel effect */
+@keyframes neon-travel {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
