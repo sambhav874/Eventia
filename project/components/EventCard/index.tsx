@@ -24,7 +24,7 @@ const EventCard: React.FC<EventCardProps> = ({
   return (
     <Card key={id} className="event-card">
       <CardHeader>
-        <CardTitle>Event {title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
