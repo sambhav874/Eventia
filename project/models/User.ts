@@ -16,6 +16,11 @@ const UserSchema = new Schema({
         enum: ['user', 'organizer'], 
         required: true,
     }
+    ,
+    name: {
+        type: String, 
+        required: true,
+    }
 
 })
 
