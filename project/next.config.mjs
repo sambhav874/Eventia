@@ -10,7 +10,7 @@ const nextConfig = {
             },
           ],
         
-      domains: ['eventia-media-storage.s3.amazonaws.com'],
+      domains: ['eventia-media-storage.s3.amazonaws.com' , 'img.clerk.com'],
     },
   };
   
