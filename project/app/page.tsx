@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { eventsWithLogos, organizerTypes } from "@/components/ui/logos/logos";
 import CarouselComponent from "@/components/ui/CarouselComponent";
-import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
+
 import axios from 'axios';
 import EventCard from "@/components/EventCard";
 import { useLocomotiveScroll } from 'react-locomotive-scroll';

@@ -1,13 +1,25 @@
-'use client'
+"use client";
 
-import { useForm, useFieldArray } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { useEffect, useState } from "react"
-import { useUser } from "@clerk/nextjs"
-import { CalendarIcon, TagIcon, MapPinIcon, UserIcon, DollarSignIcon, UsersIcon, ClockIcon, PlusIcon, XIcon } from "lucide-react"
+import React, { useEffect, useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useUser } from "@clerk/nextjs";
+import axios from "axios";
+import { format } from "date-fns";
+import {
+  CalendarIcon,
+  TagIcon,
+  MapPinIcon,
+  UserIcon,
+  DollarSignIcon,
+  UsersIcon,
+  ClockIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,11 +28,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Calendar } from "@/components/ui/calendar"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Card,
   CardContent,
@@ -28,17 +40,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import ImageUploader from "@/components/EditableImageUploader"
-import VideoUploader from "@/components/EditableVideoUploader"
-import axios from "axios"
-
+} from "@/components/ui/tooltip";
+import ImageUploader from "@/components/EditableImageUploader";
+import VideoUploader from "@/components/EditableVideoUploader";
+import { eventsWithLogos } from "@/components/ui/logos/logos";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -49,24 +60,35 @@ const formSchema = z.object({
   location: z.string().min(1, { message: "Location is required" }),
   organiser: z.string(),
   creator: z.string(),
-  capacity: z.number().min(0, { message: "Capacity must be greater than or equal to 0" }),
-  price: z.number().min(0, { message: "Price must be a positive number" }).optional(),
-  duration: z.number().min(0, { message: "Duration must be a positive number" }),
+  capacity: z
+    .number()
+    .min(0, { message: "Capacity must be greater than or equal to 0" }),
+  price: z
+    .number()
+    .min(0, { message: "Price must be a positive number" })
+    .optional(),
+  duration: z
+    .number()
+    .min(0, { message: "Duration must be a positive number" }),
   isPaid: z.boolean(),
   tags: z.array(z.string()),
   rules: z.array(z.string()),
   terms_conditions: z.array(z.string()),
   specialReqs: z.string().optional(),
-  images: z.array(z.string()).min(1, { message: "At least one image is required" }),
-  videos: z.array(z.string()).min(1, { message: "At least one image is required" }),
-})
+  images: z
+    .array(z.string())
+    .min(1, { message: "At least one image is required" }),
+  videos: z
+    .array(z.string())
+    .min(1, { message: "At least one video is required" }),
+});
 
-type EventFormValues = z.infer<typeof formSchema>
+type EventFormValues = z.infer<typeof formSchema>;
 
-export default function Component() {
-  const [step, setStep] = useState(1)
-  
-  const { user } = useUser()
+export default function CreateEventForm() {
+  const [step, setStep] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { user } = useUser();
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(formSchema),
@@ -77,7 +99,7 @@ export default function Component() {
       end_date: new Date(),
       time: "",
       location: "",
-      organiser:  "",
+      organiser: "",
       creator: "",
       isPaid: false,
       capacity: 0,
@@ -90,45 +112,52 @@ export default function Component() {
       images: [],
       videos: [],
     },
-  })
+  });
 
-  const { fields: tagFields, append: appendTag, remove: removeTag } = useFieldArray({
+  const {
+    fields: tagFields,
+    append: appendTag,
+    remove: removeTag,
+  } = useFieldArray({
     control: form.control,
     name: "tags",
-  })
-  
-  const { fields: ruleFields, append: appendRule, remove: removeRule } = useFieldArray({
+  });
+
+  const {
+    fields: ruleFields,
+    append: appendRule,
+    remove: removeRule,
+  } = useFieldArray({
     control: form.control,
     name: "rules",
-  })
+  });
 
   useEffect(() => {
     if (user?.emailAddresses[0]?.emailAddress) {
-      fetchUsernameByEmail(user.emailAddresses[0].emailAddress)
+      fetchUsernameByEmail(user.emailAddresses[0].emailAddress);
     }
-  }, [user]) 
+  }, [user]);
 
   async function fetchUsernameByEmail(email: string) {
     try {
-      const response = await fetch('/api/get-username', {
-        method: 'POST',
+      const response = await fetch("/api/get-username", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
-      })
-  
-      const data = await response.json()
-  
+      });
+
+      const data = await response.json();
+
       if (response.ok) {
-       
-        form.setValue('organiser', data.username);
-        form.setValue('creator', data.creator);
+        form.setValue("organiser", data.username);
+        form.setValue("creator", data.creator);
       } else {
-        console.error('Error:', data.message)
+        console.error("Error:", data.message);
       }
     } catch (error) {
-      console.error('Fetch error:', error)
+      console.error("Fetch error:", error);
     }
   }
 
@@ -142,66 +171,69 @@ export default function Component() {
         price: values.price ? Number(values.price) : 0,
         duration: Number(values.duration),
         isPaid: Boolean(values.isPaid),
-      }
+      };
 
       console.log(parsedData);
 
-      const response = await axios.post('/api/events', parsedData, {
+      const response = await axios.post("/api/events", parsedData, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
-      console.log('Success:', response.data);
-      alert('Event created successfully!');
-    
-  
-      
-      alert('Event created successfully!')
+
+      console.log("Success:", response.data);
+      alert("Event created successfully!");
     } catch (error) {
-      console.error('Error:', error)
-      alert('Failed to create event')
+      console.error("Error:", error);
+      alert("Failed to create event");
     }
-  }
+  };
 
   const handleNext = async () => {
-    const fields = getFieldsForStep(step)
-    const isValid = await form.trigger(fields)
+    const fields = getFieldsForStep(step);
+    const isValid = await form.trigger(fields);
     if (isValid) {
-      setStep(prev => Math.min(prev + 1, 4))
+      setStep((prev) => Math.min(prev + 1, 4));
     }
-  }
+  };
 
   const handlePrevious = () => {
-    setStep(prev => Math.max(prev - 1, 1))
-  }
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   const getFieldsForStep = (step: number): (keyof EventFormValues)[] => {
     switch (step) {
       case 1:
-        return ['title', 'description', 'start_date', 'end_date', 'time']
+        return ["title", "description", "start_date", "end_date", "time"];
       case 2:
-        return ['location', 'organiser', 'tags', 'rules']
+        return ["location", "organiser", "tags", "rules"];
       case 3:
-        return ['capacity', 'isPaid', 'price', 'duration', 'specialReqs']
+        return ["capacity", "isPaid", "price", "duration", "specialReqs"];
       case 4:
-        return ['images', 'videos']
+        return ["images", "videos"];
       default:
-        return []
+        return [];
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">Create New Event</CardTitle>
-            <CardDescription className="text-center text-gray-400">Fill in the details to create your event</CardDescription>
+            <CardTitle className="text-2xl font-bold text-center">
+              Create New Event
+            </CardTitle>
+            <CardDescription className="text-center text-gray-400">
+              Fill in the details to create your event
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
                 {step === 1 && (
                   <>
                     <FormField
@@ -211,7 +243,11 @@ export default function Component() {
                         <FormItem>
                           <FormLabel>Event Title</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter event title" {...field} className="bg-gray-700 text-white border-gray-600" />
+                            <Input
+                              placeholder="Enter event title"
+                              {...field}
+                              className="bg-gray-700 text-white border-gray-600"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -224,7 +260,11 @@ export default function Component() {
                         <FormItem>
                           <FormLabel>Event Description</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="Describe your event" {...field} className="bg-gray-700 text-white border-gray-600" />
+                            <Textarea
+                              placeholder="Describe your event"
+                              {...field}
+                              className="bg-gray-700 text-white border-gray-600"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -271,7 +311,11 @@ export default function Component() {
                         <FormItem>
                           <FormLabel>Event Time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} className="bg-gray-700 text-white border-gray-600" />
+                            <Input
+                              type="time"
+                              {...field}
+                              className="bg-gray-700 text-white border-gray-600"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -291,7 +335,11 @@ export default function Component() {
                           <FormControl>
                             <div className="relative">
                               <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                              <Input placeholder="Enter event location" {...field} className="bg-gray-700 text-white border-gray-600 pl-10" />
+                              <Input
+                                placeholder="Enter event location"
+                                {...field}
+                                className="bg-gray-700 text-white border-gray-600 pl-10"
+                              />
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -307,7 +355,12 @@ export default function Component() {
                           <FormControl>
                             <div className="relative">
                               <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                              <Input id="organizer-input" placeholder="Event Organiser" {...field} className="bg-gray-700 text-white border-gray-600 pl-10" />
+                              <Input
+                                id="organizer-input"
+                                placeholder="Event Organiser"
+                                {...field}
+                                className="bg-gray-700 text-white border-gray-600 pl-10"
+                              />
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -316,35 +369,67 @@ export default function Component() {
                     />
                     <div>
                       <FormLabel>Event Tags</FormLabel>
-                      {tagFields.map((field, index) => (
-                        <FormField
-                          key={field.id}
-                          control={form.control}
-                          name={`tags.${index}`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <div className="flex items-center space-x-2 mb-2">
-                                  <Input
-                                    placeholder="Enter a tag"
-                                    {...field}
-                                    className="bg-gray-700 text-white border-gray-600"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => removeTag(index)}
-                                  >
-                                    <XIcon className="h-4 w-4" />
-                                    <span className="sr-only">Remove tag</span>
-                                  </Button>
-                                </div>
-                              </FormControl>
-                            </FormItem>
-                          )}
+                      <div className="space-y-2">
+                        {tagFields.map((field, index) => (
+                          <FormField
+                            key={field.id}
+                            control={form.control}
+                            name={`tags.${index}`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <div className="flex items-center space-x-2">
+                                    <Input
+                                      placeholder="Enter a tag"
+                                      {...field}
+                                      className="bg-gray-700 text-white border-gray-600"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      onClick={() => removeTag(index)}
+                                    >
+                                      <XIcon className="h-4 w-4" />
+                                      <span className="sr-only">Remove tag</span>
+                                    </Button>
+                                  </div>
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="mt-2">
+                        <Input
+                          placeholder="Search events"
+                          className="mb-2 bg-gray-700 text-white border-gray-600"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                      ))}
+                        {searchQuery && (
+                          <div className="max-h-40 overflow-y-auto bg-gray-700 border border-gray-600 rounded-md">
+                            {eventsWithLogos
+                              .filter((event) =>
+                                event.name.toLowerCase().includes(searchQuery.toLowerCase())
+                              )
+                              .map((event) => (
+                                <div
+                                  key={event.name}
+                                  className="p-2 text-sm cursor-pointer hover:bg-gray-600"
+                                  onClick={() => {
+                                    appendTag(event.name);
+                                    setSearchQuery("");
+                                  }}
+                                >
+                                  {event.name}
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+
                       <Button
                         type="button"
                         variant="outline"
@@ -355,9 +440,8 @@ export default function Component() {
                         <PlusIcon className="h-4 w-4 mr-2" />
                         Add Tag
                       </Button>
-                    </div>
-                    <div>
-                      <FormLabel>Event Rules</FormLabel>
+
+                      <FormLabel className="mt-4 block">Event Rules</FormLabel>
                       {ruleFields.map((field, index) => (
                         <FormField
                           key={field.id}
@@ -416,7 +500,9 @@ export default function Component() {
                                 type="number"
                                 placeholder="Enter event capacity"
                                 {...field}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                onChange={(e) =>
+                                  field.onChange(Number(e.target.value))
+                                }
                                 className="bg-gray-700 text-white border-gray-600 pl-10"
                               />
                             </div>
@@ -431,8 +517,12 @@ export default function Component() {
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border border-gray-600 p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">Paid Event</FormLabel>
-                            <FormDescription>Is this a paid event?</FormDescription>
+                            <FormLabel className="text-base">
+                              Paid Event
+                            </FormLabel>
+                            <FormDescription>
+                              Is this a paid event?
+                            </FormDescription>
                           </div>
                           <FormControl>
                             <Switch
@@ -457,7 +547,9 @@ export default function Component() {
                                   type="number"
                                   placeholder="Enter event price"
                                   {...field}
-                                  onChange={(e) => field.onChange(Number(e.target.value))}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
                                   className="bg-gray-700 text-white border-gray-600 pl-10"
                                 />
                               </div>
@@ -480,7 +572,9 @@ export default function Component() {
                                 type="number"
                                 placeholder="Enter event duration"
                                 {...field}
-                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                onChange={(e) =>
+                                  field.onChange(Number(e.target.value))
+                                }
                                 className="bg-gray-700 text-white border-gray-600 pl-10"
                               />
                             </div>
@@ -512,26 +606,26 @@ export default function Component() {
                 {step === 4 && (
                   <>
                     <FormField
-  control={form.control}
-  name="images"
-  render={({ field }) => (
-    <FormItem>
-      <FormLabel>Event Images</FormLabel>
-      <FormControl>
-        <ImageUploader
-          onChange={(images) => {
-            field.onChange(images)
-            form.trigger("images")
-          }}
-          value={field.value || []}
-        />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Event Images</FormLabel>
+                          <FormControl>
+                            <ImageUploader
+                              onChange={(images) => {
+                                field.onChange(images);
+                                form.trigger("images");
+                              }}
+                              value={field.value || []}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-<FormField
+                    <FormField
                       control={form.control}
                       name="videos"
                       render={({ field }) => (
@@ -540,8 +634,8 @@ export default function Component() {
                           <FormControl>
                             <VideoUploader
                               onChange={(videos) => {
-                                field.onChange(videos)
-                                form.trigger("videos")
+                                field.onChange(videos);
+                                form.trigger("videos");
                               }}
                               value={field.value || []}
                             />
@@ -574,5 +668,5 @@ export default function Component() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
