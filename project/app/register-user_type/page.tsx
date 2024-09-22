@@ -9,20 +9,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBuilding, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
-  const { user } = useUser(); // This is the front-end API for getting user details
+  const { user } = useUser(); 
   const [username, setUserName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [userType, setUserType] = useState<string>("");
   const [submissionStatus, setSubmissionStatus] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [name , setName] = useState<string>('');
 
   useEffect(() => {
     if (user) {
-      setUserName(user.fullName || "");
+      setUserName(user.username || "");
       setEmail(user.emailAddresses[0]?.emailAddress || "");
       setPhoneNumber(user.phoneNumbers[0]?.phoneNumber || "");
+      setName(user.fullName || "");
     }
   }, [user]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ const Register = () => {
   
     setSubmissionStatus(true);
     
-    console.log({ username, email, userType, phoneNumber }); // Check values being sent
+    console.log({ username, email, userType, phoneNumber }); 
   
     fetch('/api/register', {
       method: 'POST',
@@ -45,7 +48,8 @@ const Register = () => {
         username,
         email,
         userType,
-        phoneNumber
+        phoneNumber,
+        name
       }),
     })
     .then((response) => response.json())
@@ -66,6 +70,14 @@ const Register = () => {
               type="text"
               value={username}
               onChange={(e) => setUserName(e.target.value)} className="w-1/2"
+            />
+
+<Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              type="text" disabled
+              value={name}
+              onChange={(e) => setName(e.target.value)} className="w-1/2"
             />
           
             <Label htmlFor="email">Email</Label>
