@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs"
 import { Menu } from "lucide-react"
@@ -32,7 +33,7 @@ export function Navbar() {
           </nav>
           <div className="flex items-center space-x-4">
             <SignedOut>
-              <SignInButton mode="modal" afterSignUpUrl={process.env.CLERK_SIGN_UP_FORCE_REDIRECT_URL}>
+              <SignInButton mode="modal" >
                 <Button variant="outline" className="md:inline-flex">
                   Sign In
                 </Button>

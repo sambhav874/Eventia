@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-const EventsPage = () => {
+const EventsPage  = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -170,6 +170,7 @@ const EventsPage = () => {
                   title={event.title}
                   description={event.description}
                   start_date={event.start_date}
+                  tag={event.tags}
                   location={event.location}
                   images={event.images}
                 />
@@ -202,6 +203,7 @@ const EventsPage = () => {
                 start_date={event.start_date}
                 location={event.location}
                 images={event.images}
+                tag={event.tags}
               />
             ))}
           </div>
