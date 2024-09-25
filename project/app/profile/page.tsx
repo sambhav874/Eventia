@@ -42,6 +42,8 @@ const ProfilePage = () => {
   const [profilePictureUrl, setProfilePictureUrl] = useState<string>("");
   const [userRef, setUserRef] = useState<string>("");
   const [organizerRef, setOrganizerRef] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [founder, setFounder] = useState<string>("");
 
   useEffect(() => {
     if (user) {
@@ -58,24 +60,27 @@ const ProfilePage = () => {
     if (email) {
       try {
         const response = await axios.post(`/api/profile`, { email });
-        const { user, userInfo } = response.data;
-        setMongoUser(userInfo);
-        setUserType(user.userType );
-        if (userInfo.profilePicture || userInfo.profileLogo) {
-          setProfilePictureUrl(userInfo.profilePicture || userInfo.profileLogo);
-        }
-        
-        setWebsite(userInfo.website || "");
-        setLinkedIn(userInfo.linkedin || "");
-        setInstagram(userInfo.instagram || "");
-        if (userInfo.organizerType) {
-          setOrganizerType(userInfo.organizerType || "");
-          setOrganizerRef(userInfo.organizerRef || "");
-        } else {
+        const { user, userInfo, organizerInfo } = response.data;
+        setMongoUser(user);
+        setUserType(user.userType);
+        if (userInfo) {
+          setProfilePictureUrl(userInfo.profilePicture || "");
+          setWebsite(userInfo.website || "");
+          setLinkedIn(userInfo.linkedin || "");
+          setInstagram(userInfo.instagram || "");
           setGender(userInfo.gender || "");
           setAddress(userInfo.address || "");
           setDob(userInfo.dob ? new Date(userInfo.dob) : undefined);
           setUserRef(userInfo.userRef || "");
+        } else if (organizerInfo) {
+          setProfilePictureUrl(organizerInfo.profileLogo || "");
+          setWebsite(organizerInfo.website || "");
+          setLinkedIn(organizerInfo.linkedin || "");
+          setInstagram(organizerInfo.instagram || "");
+          setOrganizerType(organizerInfo.organizerType || "");
+          setOrganizerRef(organizerInfo.organizerRef || "");
+          setBio(organizerInfo.bio || "");
+          setFounder(organizerInfo.founder || "");
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -90,16 +95,16 @@ const ProfilePage = () => {
       website,
       linkedin,
       instagram,
-      profilePicture: profilePictureUrl,
     };
 
     if (userType === "organizer") {
       updates = {
         ...updates,
-        organizerType:
-          organizerType === "other" ? customOrganizerType : organizerType,
+        organizerType: organizerType === "other" ? customOrganizerType : organizerType,
         profileLogo: profilePictureUrl,
         organizerRef,
+        bio,
+        founder,
       };
     } else if (userType === "user") {
       updates = {
@@ -131,12 +136,9 @@ const ProfilePage = () => {
       {user && (
         <Card className="w-full max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle className="">{userType === "user" ? (
-                <UserTabs />
-            ) : (
-                <OrganizerTabs />
-            )}</CardTitle>
-            
+            <CardTitle className="">
+              {userType === "user" ? <UserTabs /> : <OrganizerTabs />}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex justify-center">
@@ -218,6 +220,10 @@ const ProfilePage = () => {
                     className="mt-2"
                   />
                 )}
+                <Label htmlFor="bio">Bio</Label>
+                <Input id="bio" value={bio} onChange={(e) => setBio(e.target.value)} />
+                <Label htmlFor="founder">Founder</Label>
+                <Input id="founder" value={founder} onChange={(e) => setFounder(e.target.value)} />
               </div>
             )}
 
@@ -260,10 +266,7 @@ const ProfilePage = () => {
               </>
             )}
 
-            <Button
-              onClick={handleUpdateProfile}
-              className="w-full"
-            >
+            <Button onClick={handleUpdateProfile} className="w-full">
               Update Profile
             </Button>
           </CardContent>

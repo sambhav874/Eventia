@@ -106,7 +106,7 @@ export default function Home() {
   }, [scroll]);
 
   return (
-    <div data-scroll-container  className="overflow-x-hidden locomotive-scroll-container text-foreground font-geist  min-h-screen">
+    <div  className="overflow-x-hidden locomotive-scroll-container text-foreground font-geist  min-h-screen">
       
 
       <main data-scroll-section>

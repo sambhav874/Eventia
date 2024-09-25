@@ -2,7 +2,7 @@ import { faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
-import { Button } from "./../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -10,10 +10,14 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "../ui/card";
+} from "@/components/ui/card";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+
 
 const EventCard: React.FC<EventCardProps> = ({
+  tag,
   id,
   title,
   description,
@@ -21,8 +25,17 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   images,
 }) => {
+  const router = useRouter();
+
+  const handleBooking = () => {
+    const encodedTag = Array.isArray(tag) ? encodeURIComponent(tag[0]) : encodeURIComponent(tag);
+    const url = `/events/tag/${encodedTag}/${id}`;
+    console.log(`Navigating to: ${url}`);
+    router.push(url);
+  };
+
   return (
-    <Card key={id} className="event-card">
+    <Card className="event-card">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -48,7 +61,10 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="bg-primary-accent1 text-primary-accent3 hover:bg-primary-light w-full">
+        <Button 
+          className="bg-primary-accent1 text-primary-accent3 hover:bg-primary-light w-full"
+          onClick={handleBooking}
+        >
           Book Tickets
         </Button>
       </CardFooter>

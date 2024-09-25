@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-const TagEventsPage = () => {
+const TagEventsPage  = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const { tag } = useParams();
@@ -72,6 +72,7 @@ const TagEventsPage = () => {
                 start_date={event.start_date}
                 location={event.location}
                 images={event.images}
+                tag={tag}
               />
             ))}
           </div>

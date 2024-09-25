@@ -29,7 +29,7 @@ const OrganizerTabs = () => {
             <div>
                 <Button 
                     className={`duration-300 ${pathname === '/my-bookings' ? 'bg-white text-black' : 'bg-slate-900 text-white hover:bg-white hover:text-black'}`}>
-                    <Link href={'/my-bookings'}>New Events</Link>
+                    <Link href={'/new-event'}>New Event</Link>
                 </Button>
             </div>
             <div>

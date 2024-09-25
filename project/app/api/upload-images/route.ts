@@ -1,4 +1,4 @@
-import  {S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import  {S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
 import uniqid from 'uniqid';
 export async function POST(req: Request) {
   try {
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         Key: newFileName,
         Body: buffer,
         ContentType: file.type,
-        ACL: 'public-read',
+        ACL: ObjectCannedACL.public_read
       };
 
       await s3Client.send(new PutObjectCommand(params));

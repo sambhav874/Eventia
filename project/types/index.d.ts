@@ -1,3 +1,11 @@
+declare global {
+  interface Window {
+    locoScroll: any; 
+  }
+}
+
+export {};
+
 interface ImageUploaderProps {
     onChange: (images: File[]) => void;
     value: string[];
@@ -10,12 +18,18 @@ interface ImageUploaderProps {
 
 
   interface EventCardProps {
+    tag: string[] | string ,
     id: string;
     title: string;
     description: string;
     start_date: Date;
     location: string;
     images: string[];
+  }
+
+
+  interface EventDetailsProps{
+    id: string;
   }
 
   interface OrganizerInfo {
@@ -28,7 +42,10 @@ interface ImageUploaderProps {
     instagram?: string;
     organizerType: string;
     organizerRef?: mongoose.Types.ObjectId;
-    profileLogo?: string
+    profileLogo?: string;
+    events?: mongoose.Types.ObjectId[];
+    bio?:[];
+    founder?:[]
   }
 
   interface UserInfo {
@@ -45,3 +62,45 @@ interface ImageUploaderProps {
     userRef?: mongoose.Types.ObjectId;
     profilePicture?: string
   }
+
+
+  interface EventDetailsProps {
+    id: string;
+  }
+  
+  interface Event {
+    _id: string;
+    title: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    time: string;
+    location: string;
+    images: string[];
+    tags: string[];
+    addedAt: string;
+    creator: string;
+    capacity: number;
+    attendees: string[];
+    duration: number;
+    videos: string[];
+    isPaid: boolean;
+    price: number;
+    organiser: string;
+    rules: string[];
+    specialReqs: string[];
+    terms_conditions: string[];
+  }
+  
+  interface Creator {
+    website: string;
+    profileLogo: string;
+    linkedin: string;
+    instagram: string;
+    organizerType: string;
+    events: string[];
+    bio: string[];
+    founder: string;
+    organizerRef: string;
+  }
+  

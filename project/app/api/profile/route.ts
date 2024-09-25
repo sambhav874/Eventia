@@ -4,13 +4,8 @@ import UserInfo from "@/models/UserInfo";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-
- 
-    
-
 export async function POST(req: NextRequest) {
   try {
-    
     const { email } = await req.json();
 
     await mongoose.connect(process.env.NEXT_MONGO_CLUSTER as string);
@@ -25,9 +20,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const userInfo = await UserInfo.findOne({ userRef: user._id }) || await OrganizerInfo.findOne({ organizerRef: user._id });
+    const userInfo = await UserInfo.findOne({ userRef: user._id });
+    const organizerInfo = await OrganizerInfo.findOne({ organizerRef: user._id });
 
-    return NextResponse.json({ user, userInfo }, { status: 200 });
+    return NextResponse.json({ user, userInfo, organizerInfo }, { status: 200 });
 
   } catch (error) {
     console.error(error);
