@@ -1,14 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, DollarSign, FileText, MapPin, Users, Video, AlertTriangle, Globe, Instagram, Linkedin } from "lucide-react";
+import { Calendar, Clock, DollarSign, FileText, MapPin, Users, Video, AlertTriangle, Globe, Instagram, Linkedin, FacebookIcon, LinkedinIcon, ShareIcon, TwitterIcon } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import EventCard from "@/components/EventCard";
 import { Badge } from '../ui/badge';
-import EventDetailsProps from  './../../types/index'                                                                                                                                                                                                                                                                                                                                                                                                                                            
+import { QRCodeSVG } from 'qrcode.react';
+import { FacebookShareButton, TwitterShareButton, LinkedinShareButton, WhatsappShareButton, WhatsappIcon } from 'react-share';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Toaster } from '@/components/ui/toaster';
+import { toast } from '@/hooks/use-toast';
 
+interface EventDetailsProps {
+  id: string;
+}
+
+interface Event {
+  _id: string;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  time: string;
+  location: string;
+  images: string[];
+  tags: string[];
+  addedAt: string;
+  creator: string;
+  capacity: number;
+  attendees: string[];
+  duration: number;
+  videos: string[];
+  isPaid: boolean;
+  price: number;
+  organiser: string;
+  rules: string[];
+  specialReqs: string[];
+  terms_conditions: string[];
+}
+
+interface Creator {
+  website: string;
+  profileLogo: string;
+  linkedin: string;
+  instagram: string;
+  organizerType: string;
+  events: string[];
+  bio: string[];
+  founder: string;
+  organizerRef: string;
+}
 
 export default function EventComponent({ id }: EventDetailsProps) {
   const [event, setEvent] = useState<Event | null>(null);
@@ -84,6 +134,19 @@ export default function EventComponent({ id }: EventDetailsProps) {
     };
     fetchSuggestedEvents();
   }, [organizer, id]);
+
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      toast({
+        title: "Link copied!",
+        description: "The event link has been copied to your clipboard.",
+      });
+    }, (err) => {
+      console.error('Could not copy text: ', err);
+    });
+  };
 
   if (loading) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div></div>;
   if (error) return <div className="text-center py-8 text-red-500 text-xl">{error}</div>;
@@ -195,6 +258,49 @@ export default function EventComponent({ id }: EventDetailsProps) {
             </div>
           </div>
         </div>
+
+        <div className="flex justify-between items-center">
+            <div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <ShareIcon className="mr-2 h-4 w-4" />
+                    Share
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Share this event</DialogTitle>
+                    <DialogDescription>
+                      Share this event with your friends and colleagues.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex items-center space-x-2">
+                    <div className="grid flex-1 gap-2">
+                      <Button variant="outline" onClick={copyToClipboard}>
+                        Copy Link
+                      </Button>
+                    </div>
+                    <FacebookShareButton url={shareUrl}>
+                      <FacebookIcon size={32} round />
+                    </FacebookShareButton>
+                    <TwitterShareButton url={shareUrl}>
+                      <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                    <LinkedinShareButton url={shareUrl}>
+                      <LinkedinIcon size={32} round />
+                    </LinkedinShareButton>
+                    <WhatsappShareButton url={shareUrl}>
+                      <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div>
+              <QRCodeSVG value={shareUrl} size={128} />
+            </div>
+          </div>
       </section>
 
       <section className="space-y-6">
