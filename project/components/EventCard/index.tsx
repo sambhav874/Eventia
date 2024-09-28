@@ -35,7 +35,7 @@ const EventCard: React.FC<EventCardProps> = ({
   };
 
   return (
-    <Card className="event-card">
+    <Card className="event-card h-auto w-full">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

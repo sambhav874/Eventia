@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
     await mongoose.connect(process.env.NEXT_MONGO_CLUSTER as string);
 
     const data = await req.json();
-    console.log(data);
-    console.log(data.creator);
+    
 
     const event = new EventModel(data);
     await event.save();
