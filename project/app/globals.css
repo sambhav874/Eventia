@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'locomotive-scroll/dist/locomotive-scroll.css';
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -275,3 +276,4 @@ body {
     transform: translateY(100%);
   }
 }
+
