@@ -55,12 +55,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en">
         <head>
           <script
-            src={https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places}
+            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
             async
             defer
           ></script>
         </head>
-        <body className={${geistSans.variable} ${geistMono.variable} antialiased}>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main ref={containerRef} className="flex-grow">
@@ -71,5 +71,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </body>
       </html>
     </ClerkProvider>
-  );
+  );
 }
