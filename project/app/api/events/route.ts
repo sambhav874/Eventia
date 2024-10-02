@@ -11,26 +11,24 @@ export async function GET(req: NextRequest) {
     const tag = searchParams.get('tag');
     const id = searchParams.get('id');
     const organizerRef = searchParams.get('organizerRef');
+    const eventIds = searchParams.get('eventIds');
 
     let query: any = {};
     if (tag) {
       query.tags = tag;
     }
     if (id) {
-      if (Array.isArray(id)) {
-        query._id = { $in: id };
-      } else {
-        query._id = id;
-      }
+      query._id = id;
     }
     if (organizerRef) {
       query.creator = organizerRef;
     }
+    if (eventIds) {
+      const ids = eventIds.split(',');
+      query._id = { $in: ids };
+    }
 
-    
     const events = await EventModel.find(query);
-    
-    
 
     if (events.length === 0) {
       return NextResponse.json({ message: 'No events found' }, { status: 404 });
@@ -51,7 +49,6 @@ export async function POST(req: NextRequest) {
     await mongoose.connect(process.env.NEXT_MONGO_CLUSTER as string);
 
     const data = await req.json();
-    
 
     const event = new EventModel(data);
     await event.save();

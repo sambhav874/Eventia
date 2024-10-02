@@ -14,7 +14,16 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-
+interface EventCardProps {
+  tag: string[] | string;
+  id: string;
+  title: string;
+  description: string;
+  start_date: Date;
+  location: string;
+  images: string[];
+  onClick: (eventId: string, tags: string[]) => void;
+}
 
 const EventCard: React.FC<EventCardProps> = ({
   tag,
@@ -24,10 +33,13 @@ const EventCard: React.FC<EventCardProps> = ({
   start_date,
   location,
   images,
+  onClick
 }) => {
   const router = useRouter();
 
   const handleBooking = () => {
+    const tags = Array.isArray(tag) ? tag : [tag];
+    onClick(id, tags);
     const encodedTag = Array.isArray(tag) ? encodeURIComponent(tag[0]) : encodeURIComponent(tag);
     const url = `/events/tag/${encodedTag}/${id}`;
     console.log(`Navigating to: ${url}`);

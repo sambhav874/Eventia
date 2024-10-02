@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "socket": "node server/socket.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run socket\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.651.1",
@@ -41,6 +43,8 @@
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "concurrently": "^9.0.1",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.2.1",
     "framer-motion": "^11.5.4",
@@ -50,6 +54,7 @@
     "lucide-react": "^0.439.0",
     "mongoose": "^8.6.1",
     "next": "14.2.8",
+    "python-shell": "^5.0.0",
     "qrcode.react": "^4.0.1",
     "react": "^18",
     "react-day-picker": "^8.10.1",
@@ -58,9 +63,11 @@
     "react-locomotive-scroll": "^0.2.2",
     "react-qr-code": "^2.0.15",
     "react-share": "^5.1.0",
+    "socket.io": "^4.8.0",
     "swiper": "^11.1.12",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "uniqid": "^5.4.0",
     "zod": "^3.23.8"
   },

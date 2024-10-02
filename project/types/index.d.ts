@@ -25,6 +25,7 @@ interface ImageUploaderProps {
     start_date: Date;
     location: string;
     images: string[];
+    onClick?: () => void;
   }
 
 
@@ -62,6 +63,11 @@ interface ImageUploaderProps {
     userRef?: mongoose.Types.ObjectId;
     profilePicture?: string
   }
+interface UserTagInteraction extends Document {
+  userEmail: string;
+  tagCounts: Record<string, number>;
+  lastUpdated: Date;
+}
 
 
   interface EventDetailsProps {
